@@ -26,6 +26,21 @@ func (u *userRepositoryImpl) GetUserByEmailAndPassword(ctx context.Context, emai
 	return user, nil
 }
 
+func (u *userRepositoryImpl) UpdateUserRole(ctx context.Context, userId uint, role string) error {
+
+	err := u.DB.Model(&models.User{}).
+		Where("id = ?", userId).
+		Update("role", role).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return userError.ErrorNotFound
+		}
+		return err
+	}
+
+	return nil
+}
+
 func NewUserRepositoryImpl(db *gorm.DB) repository.UserRepository {
 	repoImpl := repositoryImpl{
 		DB: db,

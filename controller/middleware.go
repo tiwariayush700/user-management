@@ -45,6 +45,27 @@ func VerifyUserAndServe(authSvc auth.Service) gin.HandlerFunc {
 	}
 }
 
+func VerifyAdminAndServe(authSvc auth.Service) gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		_, role, err := getUserIdAndRoleFromContext(c)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, err)
+			return
+		}
+
+		if role != string(models.UserRoleAdmin) {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"message": "You are not authorised to use this service",
+			})
+			return
+		}
+
+		c.Next()
+
+	}
+}
+
 func getUserIdAndRoleFromContext(c *gin.Context) (uint, string, error) {
 
 	userIdInterface, ok := c.Get(constants.ContextKeyUserId)

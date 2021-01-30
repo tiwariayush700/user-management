@@ -59,6 +59,12 @@ func (u *userServiceImpl) LoginUser(ctx context.Context, email, password string)
 	return userResponse, nil
 }
 
+func (u *userServiceImpl) UpdateUserRole(ctx context.Context, userId uint, role string) error {
+
+	return u.repository.UpdateUserRole(ctx, userId, role)
+
+}
+
 func NewUserServiceImpl(repository repository.UserRepository) services.UserService {
 	return &userServiceImpl{repository: repository}
 }

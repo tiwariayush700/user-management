@@ -7,6 +7,7 @@ import (
 	"github.com/tiwariayush700/user-management/models"
 	"github.com/tiwariayush700/user-management/services"
 	"net/http"
+	"strconv"
 )
 
 type userController struct {
@@ -28,6 +29,10 @@ func (u *userController) RegisterRoutes() {
 
 		routerGroupVerified := userRouterGroup.Use(VerifyUserAndServe(u.authService))
 		routerGroupVerified.GET("/me", u.GetUserProfile())
+
+		routerGroupVerified.Use(VerifyAdminAndServe(u.authService))
+		routerGroupVerified.GET("/fetch/:user_id")
+		routerGroupVerified.PUT("/role/:user_id", u.UpdateUserRole())
 	}
 }
 
@@ -119,6 +124,70 @@ func (u *userController) GetUserProfile() gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, user)
+
+	}
+}
+
+type userRoleInput struct {
+	Role string `json:"role" binding:"required,oneof=ADMIN USER"`
+}
+
+func (u *userController) UpdateUserRole() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		userIdFromToken, _, err := getUserIdAndRoleFromContext(c)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, err)
+			return
+		}
+
+		params := &userRoleInput{}
+		err = c.ShouldBind(params)
+		if err != nil {
+			errRes := userError.NewErrorBadRequest(err, "invalid input")
+			c.JSON(http.StatusBadRequest, errRes)
+			return
+		}
+
+		userIdParam, ok := c.Params.Get("user_id")
+		if !ok {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "invalid input",
+			})
+			return
+		}
+
+		userId, err := strconv.ParseUint(userIdParam, 10, 32)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "invalid input",
+				"error":   err.Error(),
+			})
+			return
+		}
+
+		if userIdFromToken == uint(userId) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "cannot update yourself",
+			})
+			return
+		}
+
+		err = u.service.UpdateUserRole(c, uint(userId), params.Role)
+		if err != nil {
+			if err == userError.ErrorNotFound {
+				errRes := userError.NewErrorNotFound(err, "user not found")
+				c.JSON(http.StatusNotFound, errRes)
+				return
+			}
+			errRes := userError.NewErrorInternal(err, "something went wrong")
+			c.JSON(http.StatusNotFound, errRes)
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "User update successful",
+		})
 
 	}
 }

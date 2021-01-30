@@ -19,7 +19,7 @@ type UserRole string
 
 const (
 	UserRoleAdmin    = UserRole("ADMIN")
-	UserRoleEmployee = UserRole("EMPLOYEE")
+	UserRoleEmployee = UserRole("USER")
 )
 
 type UserLoginJWTClaims struct {
