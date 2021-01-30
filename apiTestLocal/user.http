@@ -1,0 +1,12 @@
+######REGISTER USER#########
+POST {{host}}/user/register
+Content-Type: application/json
+
+{
+  "firstName": "Ayush",
+  "lastName": "Tiwari",
+  "phone": "0987654321",
+  "role": "ADMIN",
+  "email": "tiwariayush7s00@gmail.com",
+  "password": "Ayusht@007"
+}
