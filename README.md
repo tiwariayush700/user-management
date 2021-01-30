@@ -23,4 +23,5 @@ For example, only admin users are allowed to fetch any users' details and can up
 go get -u github.com/tiwariayush700/user-management
 ```
 
- 
+### APIS CAN BE TESTED FROM THE
+ `/apiTestLocal directory`
