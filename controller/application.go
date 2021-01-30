@@ -4,6 +4,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	authImpl "github.com/tiwariayush700/user-management/auth/impl"
 	"github.com/tiwariayush700/user-management/config"
 	"github.com/tiwariayush700/user-management/models"
 	repositoryImpl "github.com/tiwariayush700/user-management/repository/impl"
@@ -39,9 +40,10 @@ func (app *app) Start() {
 
 	//services
 	userService := serviceImpl.NewUserServiceImpl(userRepositoryImpl)
+	authService := authImpl.NewAuthService(app.Config.AuthSecret)
 
 	//controllers
-	userController := NewUserController(userService, app)
+	userController := NewUserController(userService, authService, app)
 
 	//register routes
 	userController.RegisterRoutes()

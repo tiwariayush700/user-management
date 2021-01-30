@@ -18,13 +18,13 @@ type User struct {
 type UserRole string
 
 const (
-	UserRoleAdmin = UserRole("ADMIN")
+	UserRoleAdmin    = UserRole("ADMIN")
 	UserRoleEmployee = UserRole("EMPLOYEE")
 )
 
 type UserLoginJWTClaims struct {
 	Authorized bool   `json:"authorized"`
-	Id         string `json:"id"`
+	Id         uint   `json:"id"`
 	Role       string `json:"role"`
 	jwt.StandardClaims
 }
