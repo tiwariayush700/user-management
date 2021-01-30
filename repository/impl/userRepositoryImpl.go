@@ -1,6 +1,9 @@
 package repositoryImpl
 
 import (
+	"context"
+	userError "github.com/tiwariayush700/user-management/error"
+	"github.com/tiwariayush700/user-management/models"
 	"github.com/tiwariayush700/user-management/repository"
 	"gorm.io/gorm"
 )
@@ -9,7 +12,21 @@ type userRepositoryImpl struct {
 	repositoryImpl //overrides basic CRUD repo
 }
 
-func NewUserRepositoryImpl(db *gorm.DB) repository.Repository {
+func (u *userRepositoryImpl) GetUserByEmailAndPassword(ctx context.Context, email, password string) (*models.User, error) {
+
+	user := &models.User{}
+	err := u.DB.Where("email = ? AND password = ?", email, password).First(user).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, userError.ErrorNotFound
+		}
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func NewUserRepositoryImpl(db *gorm.DB) repository.UserRepository {
 	repoImpl := repositoryImpl{
 		DB: db,
 	}

@@ -45,26 +45,26 @@ func VerifyUserAndServe(authSvc auth.Service) gin.HandlerFunc {
 	}
 }
 
-func getUserIdAndRoleFromContext(c *gin.Context) (string, string, error) {
+func getUserIdAndRoleFromContext(c *gin.Context) (uint, string, error) {
 
 	userIdInterface, ok := c.Get(constants.ContextKeyUserId)
 	if !ok {
-		return "", "", fmt.Errorf("unable to authorize user")
+		return 0, "", fmt.Errorf("unable to authorize user")
 	}
 
-	userID, ok := userIdInterface.(string)
+	userID, ok := userIdInterface.(uint)
 	if !ok {
-		return "", "", fmt.Errorf("unable to convert userid type")
+		return 0, "", fmt.Errorf("unable to convert userid type")
 	}
 
 	roleInterface, ok := c.Get(constants.ContextKeyRole)
 	if !ok {
-		return "", "", fmt.Errorf("unable to authorize role")
+		return 0, "", fmt.Errorf("unable to authorize role")
 	}
 
 	role, ok := roleInterface.(string)
 	if !ok {
-		return "", "", fmt.Errorf("unable to convert role type")
+		return 0, "", fmt.Errorf("unable to convert role type")
 	}
 
 	logrus.Infof("User with user id : %d and role : %s currently logged in at %s", userID, role, time.Now().String())

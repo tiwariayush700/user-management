@@ -6,9 +6,9 @@ Content-Type: application/json
   "firstName": "Ayush",
   "lastName": "Tiwari",
   "phone": "0987654321",
-  "role": "USER",
-  "email": "tiwariayush00@gmail.com",
-  "password": "Ayusht@007"
+  "role": "ADMIN",
+  "email": "tiwariayushs00@gmail.com",
+  "password": "Password@123"
 }
 
 ######REGISTER USER#########
@@ -21,5 +21,21 @@ Content-Type: application/json
   "phone": "0987654321",
   "role": "USER",
   "email": "tiwariayush00@gmail.com",
-  "password": "Ayusht@007"
+  "password": {{testPassword}}
 }
+
+
+###############LOGIN USER
+POST {{host}}/user/login
+Content-Type: application/json
+
+{
+  "email": "tiwariayushs00@gmail.com",
+  "password": "Password@123"
+}
+
+
+################ME GET USER PROFILE###################
+GET {{host}}/user/me
+Content-Type: application/json
+Authorization: {{loginToken}}

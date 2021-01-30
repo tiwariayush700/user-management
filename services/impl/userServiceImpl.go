@@ -2,10 +2,14 @@ package serviceImpl
 
 import (
 	"context"
+	"encoding/json"
+	"github.com/sirupsen/logrus"
+	userError "github.com/tiwariayush700/user-management/error"
 	"github.com/tiwariayush700/user-management/models"
 	"github.com/tiwariayush700/user-management/repository"
 	"github.com/tiwariayush700/user-management/services"
 	"github.com/tiwariayush700/user-management/utils"
+	"gorm.io/gorm"
 )
 
 type userServiceImpl struct {
@@ -19,10 +23,60 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, user *models.User) err
 	return err
 }
 
+func (u *userServiceImpl) GetUserByID(ctx context.Context, userID uint) (*models.UserResponse, error) {
+
+	user := &models.User{}
+	err := u.repository.Get(ctx, user, userID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, userError.ErrorNotFound
+		}
+
+		return nil, err
+	}
+
+	userResponse, err := mapUserResponse(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return userResponse, nil
+}
+
+func (u *userServiceImpl) LoginUser(ctx context.Context, email, password string) (*models.UserResponse, error) {
+	password = utils.GetMd5(password)
+
+	user, err := u.repository.GetUserByEmailAndPassword(ctx, email, password)
+	if err != nil {
+		return nil, err
+	}
+
+	userResponse, err := mapUserResponse(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return userResponse, nil
+}
+
 func NewUserServiceImpl(repository repository.UserRepository) services.UserService {
 	return &userServiceImpl{repository: repository}
 }
 
+func mapUserResponse(user *models.User) (*models.UserResponse, error) {
 
+	userBytes, err := json.Marshal(user)
+	if err != nil {
+		logrus.Errorf("err marshalling user : err %v", err)
+		return nil, err
+	}
 
+	userResponse := &models.UserResponse{}
+	err = json.Unmarshal(userBytes, userResponse)
+	if err != nil {
+		logrus.Errorf("err unmarshalling user : err %v", err)
+		return nil, err
+	}
 
+	return userResponse, nil
+}
