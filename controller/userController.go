@@ -35,15 +35,15 @@ func (u *userController) Register() gin.HandlerFunc {
 		user := &models.User{}
 		err := c.ShouldBind(user)
 		if err != nil {
-			err = userError.NewErrorBadRequest("invalid input")
-			c.JSON(http.StatusBadRequest, err)
+			errRes := userError.NewErrorBadRequest(err, "invalid input")
+			c.JSON(http.StatusBadRequest, errRes)
 			return
 		}
 
 		err = u.service.CreateUser(c, user)
 		if err != nil {
-			err = userError.NewErrorInternal(err, "something went wrong")
-			c.JSON(http.StatusInternalServerError, err)
+			errRes := userError.NewErrorInternal(err, "something went wrong")
+			c.JSON(http.StatusInternalServerError, errRes)
 			return
 		}
 

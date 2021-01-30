@@ -1,3 +1,16 @@
+######REGISTER ADMIN USER#########
+POST {{host}}/user/register
+Content-Type: application/json
+
+{
+  "firstName": "Ayush",
+  "lastName": "Tiwari",
+  "phone": "0987654321",
+  "role": "USER",
+  "email": "tiwariayush00@gmail.com",
+  "password": "Ayusht@007"
+}
+
 ######REGISTER USER#########
 POST {{host}}/user/register
 Content-Type: application/json
@@ -6,7 +19,7 @@ Content-Type: application/json
   "firstName": "Ayush",
   "lastName": "Tiwari",
   "phone": "0987654321",
-  "role": "ADMIN",
-  "email": "tiwariayush7s00@gmail.com",
+  "role": "USER",
+  "email": "tiwariayush00@gmail.com",
   "password": "Ayusht@007"
 }

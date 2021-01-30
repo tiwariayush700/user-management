@@ -20,8 +20,8 @@ func NewErrorInternal(err error, messages ...string) Error {
 }
 
 // ErrorBadRequest returns an bad request error.
-func NewErrorBadRequest(messages ...string) Error {
-	return Error{Code: ErrorBadRequest.Error(), Message: strings.Join(messages, " ")}
+func NewErrorBadRequest(err error, messages ...string) Error {
+	return Error{Code: ErrorBadRequest.Error(), Message: strings.Join(messages, " "), ActualError: err}
 }
 
 // ErrorForbidden returns a forbidden request error.
