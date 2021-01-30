@@ -2,10 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	application "github.com/tiwariayush700/user-management/app"
 	"github.com/tiwariayush700/user-management/config"
+	"github.com/tiwariayush700/user-management/controller"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"log"
 )
 
 func main() {
@@ -19,13 +23,27 @@ func main() {
 
 	router := gin.Default()
 
-	app := application.NewApp(appConfig, router)
+	db, err := gorm.Open(postgres.Open(postgresUri(appConfig.PostgresServer, appConfig.PostgresUser, appConfig.PostgresPassword, appConfig.PostgresPort, appConfig.DbName)),
+		&gorm.Config{SkipDefaultTransaction: true})
+	if err != nil {
+		log.Fatal("unable to connect db ", err)
+	}
 
-	err := app.Migrate()
+	app := controller.NewApp(appConfig, db, router)
+
+	err = app.Migrate()
 	if err != nil {
 		logrus.Fatalf("err migrating db with err : %v", err)
 	}
 
 	app.Start()
 
+}
+
+func postgresUri(host, user string, password string, port string, dbname string) string {
+
+	connectionUri := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		host, user, password, dbname, port)
+
+	return connectionUri
 }
