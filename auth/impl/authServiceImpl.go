@@ -22,7 +22,7 @@ func (impl *authImpl) GenerateUserToken(userID uint, role string) (string, error
 		Id:         userID,
 		Role:       role,
 		StandardClaims: jwt.StandardClaims{
-			Issuer: "awake-money",
+			Issuer: "admin",
 		},
 	}
 
